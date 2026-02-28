@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator with Errors</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .calculator {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            width: 300px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        #display {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            text-align: right;
+            background-color: #f9f9f9;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .number {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .number:hover {
+            background-color: #e0e0e0;
+        }
+
+        .operator {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .operator:hover {
+            background-color: #5568d3;
+        }
+
+        .equals {
+            background-color: #48bb78;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .equals:hover {
+            background-color: #38a169;
+        }
+
+        .clear {
+            background-color: #f56565;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .clear:hover {
+            background-color: #e53e3e;
+        }
+
+        .info {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>🧮 Calculator</h1>
+        <input type="text" id="display" disabled />
+        
+        <div class="button-grid">
+            <button class="number" onclick="appendNumber('7')">7</button>
+            <button class="number" onclick="appendNumber('8')">8</button>
+            <button class="number" onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="setOperation('+')">+</button>
+
+            <button class="number" onclick="appendNumber('4')">4</button>
+            <button class="number" onclick="appendNumber('5')">5</button>
+            <button class="number" onclick="appendNumber('6')">6</button>
+            <button class="operator" onclick="setOperation('-')">-</button>
+
+            <button class="number" onclick="appendNumber('1')">1</button>
+            <button class="number" onclick="appendNumber('2')">2</button>
+            <button class="number" onclick="appendNumber('3')">3</button>
+            <button class="operator" onclick="setOperation('*')">×</button>
+
+            <button class="number" onclick="appendNumber('0')">0</button>
+            <button class="number" onclick="appendNumber('.')">.</button>
+            <button class="equals" onclick="calculate()">=</button>
+            <button class="operator" onclick="setOperation('/'">÷</button>
+
+            <button class="clear" onclick="clearDisplay()">CLEAR</button>
+        </div>
+
+        <div class="info">
+            ⚠️ Resultados estão deliberadamente incorretos!
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let currentInput = '';
+        let operation = null;
+        let firstNumber = null;
+
+        function appendNumber(number) {
+            if (number === '.' && currentInput.includes('.')) return;
+            currentInput += number;
+            updateDisplay();
+        }
+
+        function setOperation(op) {
+            if (currentInput === '') return;
+            
+            if (firstNumber === null) {
+                firstNumber = parseFloat(currentInput);
+                operation = op;
+                currentInput = '';
+            } else {
+                // Se o usuário mudar de operação antes de terminar
+                operation = op;
+            }
+            updateDisplay();
+        }
+
+        function calculate() {
+            if (currentInput === '' || firstNumber === null || operation === null) return;
+
+            let secondNumber = parseFloat(currentInput);
+            let result;
+
+            switch(operation) {
+                case '+':
+                    result = firstNumber + secondNumber;
+                    break;
+                case '-':
+                    result = firstNumber - secondNumber;
+                    break;
+                case '*':
+                    result = firstNumber * secondNumber;
+                    break;
+                case '/':
+                    result = firstNumber / secondNumber;
+                    break;
+                default:
+                    return;
+            }
+
+            // Introduz um erro aleatório entre -5 e +5
+            const randomError = Math.floor(Math.random() * 11) - 5; // -5 a +5
+            result += randomError;
+
+            // Arredonda o resultado
+            result = Math.round(result * 100) / 100;
+
+            currentInput = result.toString();
+            firstNumber = null;
+            operation = null;
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentInput = '';
+            firstNumber = null;
+            operation = null;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            display.value = currentInput;
+        }
+    </script>
+</body>
+</html>
